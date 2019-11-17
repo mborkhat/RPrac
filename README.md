@@ -146,3 +146,93 @@ airquality %>% arrange(desc(Ozone)) %>% select(Month) %>% head(1)
 #plot a line chart on Ozone with filtered data of month as 5                    temp <- airquality %>% filter(Month==5)
 plot(temp$Ozone,type="l",ylab = "Ozone",main = "Ozone line plot for month 5")
 
+#18-19 RE
+
+
+#DATA CENSUS POPCHANGE
+f1=read.csv("~/Mtech Docs/RPracs/pop_change.csv")
+headers=f1[2,]
+pop_change=read.csv("~/Mtech Docs/RPracs/pop_change.csv",skip=2)
+
+for(i in c(1:23))
+{
+  colnames(pop_change)[i]=paste(headers[1,i])
+}
+
+#NA SUM
+colSums(is.na(pop_change)) 
+
+
+#D
+div <- function(x){
+  if(is.numeric(x)){
+    s=x/100000
+  }else{
+    x=as.character((x))
+  }
+}
+temp <- as.data.frame(sapply(pop_change[,], div))
+
+#e SUM and Mean of COLUMNS
+mean_rows= summarise_all(pop_change[,1:23],funs(mean))
+sum_rows=colSums(Filter(is.numeric, pop_change))
+
+pop_change=rbind(pop_change,mean_rows)
+pop_change=rbind(pop_change,sum_rows)
+
+#perc change of population wrt 2000
+ans_6= pop_change%>%mutate("Perc_change"=((X2010_POPULATION-X2000_POPULATION)/X2000_POPULATION))%>%filter(Perc_change<0)
+ans_6
+
+#order data in dec of perc change Top 10 states
+ans_8=pop_change%>%mutate("Perc_change"=((X2010_POPULATION-X2000_POPULATION)/X2000_POPULATION))%>%arrange(desc(Perc_change))%>%top_n(10,Perc_change)
+ans_8
+
+#GOOGLE MICROSOFT
+
+#GETTINg gogle data
+library(quantmod)
+as.data.frame(getSymbols(c("GOOG","MSFT","AAPL","TSLA"),from="2018-01-01",to="2018-12-31"))
+write.csv(as.data.frame(GOOG),file="~/Mtech Docs/RPracs/google.csv")
+
+#plot apple and tesla + labels
+candleChart(GOOG)
+candleChart(c(TSLA,GOOG),theme = chartTheme("black"))
+
+plot(Delt(GOOG$GOOG.Close,type = "arithemetic"))
+
+plot(Cl(GOOG))
+barChart(GOOG)
+candleChart(c(GOOG,AAPL),theme = "white")
+
+
+sapply(GOOG, mean)
+sapply(GOOG, max)
+sapply(GOOG, min)
+
+index(GOOG)[which.max(GOOG$GOOG.Close)]
+index(GOOG)[which.min(GOOG$GOOG.Close)]
+
+
+# When applying an operation to two vectors that requires them to be the same length, R automatically recycles, or repeats, elements of the shorter one, until it is long enough to match the longer Vector. 
+# Example 1:
+#   Suppose we have two Vectors c(1,2,4) , c(6,0,9,10,13), where the first one is shorter with only 3 elements. Now if we sum these two, we will get a warning message as follows.
+# > c(1,2,4) + c(6,0,9,10,13)
+# [1]  7  2 13 11 15
+# Warning message:
+#   In c(1, 2, 4) + c(6, 0, 9, 10, 13) :  longer object length is not a multiple of shorter object length
+# 
+# Here R , Sum those Vectors by Recycling or repeating the elements in shorter one, until it is long enough to match the longer one as follows..
+# 
+# > c(1,2,4,1,2) + c(6,0,9,10,13)
+# [1]  7  2 13 11 15
+
+
+
+
+#LIST OF UNIQUE WORDS
+library(tm)
+text = c("I am Mark I am MarkNeo4j is cool Neo4j is cool")
+corpus = VCorpus(VectorSource(text))
+tdm = as.matrix(TermDocumentMatrix(corpus, control = list(wordLengths = c(1, Inf))))
+tdm
