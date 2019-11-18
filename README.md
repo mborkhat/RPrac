@@ -105,6 +105,13 @@ chicks=ChickWeight
 #AVG wt of all chicks during same time
 avg_wt=chicks%>%group_by(Time)%>% summarise_at(vars(weight),funs(mean))
 
+#Difference
+diff=Delt(c$weight)
+t=cbind(chicks,diff)
+colnames(t)[5]=paste("Diffrence")
+temp=t %>% group_by(Time) %>% summarise(avg=mean(Diffrence,na.rm = T))
+ggplot(temp,aes(x=Time,y=avg))+geom_line()
+
 #High and lowest diet
 highest_gain_Diet <- ChickWeight %>% group_by(Diet) %>% summarise_at(vars(weight),funs(max,min)) %>% arrange(desc(max)) %>% select(Diet) %>% head(1)
 lowest_gain_Diet <- ChickWeight %>% group_by(Diet) %>% summarise_at(vars(weight),funs(max,min)) %>% arrange(min) %>% select(Diet) %>% head(1)
